@@ -1,0 +1,75 @@
+import java.sql.*;
+import java.util.ArrayList;
+
+public class DataAccess
+{
+  public static void main( String args[] )
+  {
+    DataAccess db = new DataAccess();
+    db.connect();   // Setup connection 
+    db.close();     // Close down the program 
+  }
+
+  private Connection con = null;    // Connection to database 
+  private Statement  stm = null;    // Used to talk to database 
+
+  static final String urlDB = "jdbc:mysql://localhost:3306/Calendar?autoReconnect=true&useSSL=false";
+	static final String DRIVER = "com.mysql.jdbc.Driver";
+	static final String USERNAME = "root";
+	static final String PASSWORD = "calendar";
+	Connection c = null;  
+
+
+  /**
+   * Get a connection to the database and the Statement object.
+   */
+
+  public void connect()
+  {
+    try
+    {
+      Class.forName(DRIVER).newInstance(); //  Driver to access database 
+      con  = DriverManager.getConnection( urlDB, USERNAME, PASSWORD );
+    }
+    catch ( SQLException e )
+    {
+      System.err.println( "Problem with connection to " + urlDB );
+      System.out.println("SQLException: " + e.getMessage());
+      System.out.println("SQLState:     " + e.getSQLState());
+      System.out.println("VendorError:  " + e.getErrorCode());
+      System.exit( -1 );
+    }
+    catch ( Exception e )
+    {
+        System.err.println("Can not load JDBC/ODBC driver.");
+        System.exit( -1 );
+    }
+
+    try {
+        Statement statement = con.createStatement();
+        String sql = "select * from Calendar";
+        ResultSet rs = statement.executeQuery(sql);
+        while(rs.next()){
+        	System.out.println(rs.getInt(1) + " " + rs);
+        }
+    } catch (Exception e) {
+        System.err.println("problems creating statement object" );
+    }
+  }
+  /**
+   * Close the Database
+   */
+  public void close()
+  {
+    try
+    {
+      stm.close();     // Close the statement Object 
+      con.close();     // Close the connection to the Database 
+    } catch (SQLException e )
+    {
+      System.err.println( e.getMessage() );
+    }
+  }
+}
+
+
